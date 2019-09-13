@@ -1,30 +1,33 @@
-'use strict';
+const { globalStats } = require("@opencensus/core");
+const { OpenCensusMetrics } = require("../../lib/metricsWrapper");
 
-describe('eventLoopLag', () => {
-	const register = require('../../index').register;
-	const eventLoopLag = require('../../lib/metrics/eventLoopLag');
+describe("eventLoopLag", () => {
+  const eventLoopLag = require("../../lib/metrics/eventLoopLag");
+  const openCensusMetrics = new OpenCensusMetrics(globalStats);
 
-	beforeAll(() => {
-		register.clear();
-	});
+  beforeAll(() => {
+    globalStats.clear();
+  });
 
-	afterEach(() => {
-		register.clear();
-	});
+  afterEach(() => {
+    globalStats.clear();
+  });
 
-	it('should add metric to the registry', done => {
-		expect(register.getMetricsAsJSON()).toHaveLength(0);
-		eventLoopLag()();
+  it("should add metric to the registry", done => {
+    expect(globalStats.getMetrics()).toHaveLength(0);
+    eventLoopLag(openCensusMetrics)();
 
-		setTimeout(() => {
-			const metrics = register.getMetricsAsJSON();
-			expect(metrics).toHaveLength(1);
+    setTimeout(() => {
+      const metrics = globalStats.getMetrics();
+      console.log("--------------------------------");
+      console.log(metrics);
+      expect(metrics).toHaveLength(1);
 
-			expect(metrics[0].help).toEqual('Lag of event loop in seconds.');
-			expect(metrics[0].type).toEqual('gauge');
-			expect(metrics[0].name).toEqual('nodejs_eventloop_lag_seconds');
+      expect(metrics[0].descriptor.description).toEqual("Lag of event loop in seconds.");
+      expect(metrics[0].descriptor.type).toEqual(2);
+      expect(metrics[0].descriptor.name).toEqual("nodejs_eventloop_lag_seconds");
 
-			done();
-		}, 5);
-	});
+      done();
+    }, 5);
+  });
 });
