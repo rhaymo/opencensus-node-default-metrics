@@ -1,0 +1,99 @@
+{
+  "name": "opencensus-default-metrics",
+  "version": "0.0.1",
+  "description": "Node default metrics collected using opencensus",
+  "main": "index.js",
+  "types": "./index.d.ts",
+  "config": {
+    "releaseBranch": "master"
+  },
+  "engines": {
+    "node": ">=6.1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "lib/",
+    "index.js",
+    "index.d.ts"
+  ],
+  "standard-version": {
+    "scripts": {
+      "prerelease": "npm run test",
+      "postbump": "echo Version: v$npm_package_version",
+      "posttag": "git push --follow-tags origin $npm_package_config_releaseBranch"
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "npm audit || true && npm run lint && npm run unit",
+    "unit": "jest",
+    "build": "tsc",
+    "prerelease": "npm run typedoc",
+    "release": "git add -A && standard-version -A",
+    "typedoc": "rm -rf ./docs/* && typedoc --excludeExternals --name \"$npm_package_name\" --readme none --mode file --includeDeclarations --theme markdown --out ./docs",
+    "compile-typescript": "tsc --project ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rhaymo/opencensus-node-default-metrics.git"
+  },
+  "keywords": [
+    "opencensus",
+    "metrics"
+  ],
+  "author": "rhaymo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rhaymo/opencensus-node-default-metrics/issues"
+  },
+  "homepage": "https://github.com/rhaymo/opencensus-node-default-metrics#README",
+  "dependencies": {
+    "@opencensus/exporter-prometheus": "0.0.17",
+    "@opencensus/nodejs": "0.0.17",
+    "fastify": "^2.8.0",
+    "prom-client": "^11.5.3"
+  },
+  "devDependencies": {
+    "eslint": "5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "2.17.2",
+    "eslint-plugin-mocha": "5.3.0",
+    "eslint-plugin-node": "7.0.1",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-security": "1.4.0",
+    "jest": "^24.8.0",
+    "prettier": "1.17.1",
+    "replace": "^1.1.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testRegex": ".*Test\\.js$"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "useTabs": true,
+    "overrides": [
+      {
+        "files": "*.md",
+        "options": {
+          "useTabs": false
+        }
+      },
+      {
+        "files": ".eslintrc",
+        "options": {
+          "parser": "json"
+        }
+      }
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
