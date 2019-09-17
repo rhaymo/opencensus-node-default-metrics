@@ -1,4 +1,5 @@
-'use strict';
+const { globalStats } = require('@opencensus/core');
+const { OpenCensusMetrics } = require('../../lib/metricsWrapper');
 
 const nodeVersion = process.version;
 const versionSegments = nodeVersion
@@ -7,36 +8,37 @@ const versionSegments = nodeVersion
 	.map(Number);
 
 describe('version', () => {
-	const register = require('../../index').register;
+	const openCensusMetrics = new OpenCensusMetrics(globalStats);
+
 	const version = require('../../lib/metrics/version');
 
 	beforeAll(() => {
-		register.clear();
+		globalStats.clear();
 	});
 
 	afterEach(() => {
-		register.clear();
+		globalStats.clear();
 	});
 
 	it('should add metric to the registry', done => {
-		expect(register.getMetricsAsJSON()).toHaveLength(0);
+		expect(globalStats.getMetrics()).toHaveLength(0);
 		expect(typeof versionSegments[0]).toEqual('number');
 		expect(typeof versionSegments[1]).toEqual('number');
 		expect(typeof versionSegments[2]).toEqual('number');
 
-		version()();
+		version(openCensusMetrics)();
 
 		setTimeout(() => {
-			const metrics = register.getMetricsAsJSON();
+			const metrics = globalStats.getMetrics();
 			expect(metrics).toHaveLength(1);
 
-			expect(metrics[0].help).toEqual('Node.js version info.');
-			expect(metrics[0].type).toEqual('gauge');
-			expect(metrics[0].name).toEqual('nodejs_version_info');
-			expect(metrics[0].values[0].labels.version).toEqual(nodeVersion);
+			expect(metrics[0].descriptor.description).toEqual('Node.js version info.');
+			expect(metrics[0].descriptor.type).toEqual(1);
+			expect(metrics[0].descriptor.name).toEqual('nodejs_version_info');
+			/*	expect(metrics[0].values[0].labels.version).toEqual(nodeVersion);
 			expect(metrics[0].values[0].labels.major).toEqual(versionSegments[0]);
 			expect(metrics[0].values[0].labels.minor).toEqual(versionSegments[1]);
-			expect(metrics[0].values[0].labels.patch).toEqual(versionSegments[2]);
+			expect(metrics[0].values[0].labels.patch).toEqual(versionSegments[2]);*/
 
 			done();
 		}, 5);

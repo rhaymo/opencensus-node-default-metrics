@@ -22,19 +22,19 @@ const wrapper = () => {
 	return { createGaugeMetric, getMetrics };
 };
 
-function getOpenFileDescr(cb) {
-	fs.readdir('/proc/self/fd', (err, list) => {
+function getMaxFileDescr(cb) {
+	fs.readFile('/proc/sys/fs/file-max', 'utf8', (err, maxFds) => {
 		if (err) {
 			cb(err);
 		}
 
-		cb(list.length - 1);
+		cb(Number(maxFds));
 	});
 }
 
-describe('processOpenFileDescriptors', () => {
+describe('processMaxFileDescriptors', () => {
 	const openCensusMetrics = new OpenCensusMetrics(globalStats);
-	const processOpenFileDescriptors = require('../../lib/metrics/processOpenFileDescriptors');
+	const processMaxFileDescriptors = require('../../lib/metrics/processMaxFileDescriptors');
 
 	jest.mock(
 		'process',
@@ -52,27 +52,27 @@ describe('processOpenFileDescriptors', () => {
 	it('should add metric to the registry', () => {
 		expect(globalStats.getMetrics()).toHaveLength(0);
 
-		processOpenFileDescriptors(openCensusMetrics, { prefix: 'testPrefix_' })();
+		processMaxFileDescriptors(openCensusMetrics, { prefix: 'testPrefix_' })();
 
 		const metrics = globalStats.getMetrics();
 
 		expect(metrics).toHaveLength(1);
-		expect(metrics[0].descriptor.description).toEqual('Number of open file descriptors.');
+		expect(metrics[0].descriptor.description).toEqual('Maximum number of open file descriptors.');
 		expect(metrics[0].descriptor.type).toEqual(1);
-		expect(metrics[0].descriptor.name).toEqual('testPrefix_process_open_fds');
+		expect(metrics[0].descriptor.name).toEqual('testPrefix_process_max_fds');
 	});
 
-	it('should set process_open_fds to the value of /proc/self/fd', done => {
+	it('should set process_max_fds to the value of /proc/sys/fs/file-max', done => {
 		const wrap = wrapper();
-		processOpenFileDescriptors(wrap)();
+		processMaxFileDescriptors(wrap)();
 
 		const metrics = wrap.getMetrics()[0];
 
-		getOpenFileDescr(maxOpenFileDesc => {
-			setTimeout(() => {
-				expect(metrics.get()).toEqual(maxOpenFileDesc);
+		setTimeout(() => {
+			getMaxFileDescr(maxFileDesc => {
+				expect(metrics.get()).toEqual(maxFileDesc);
 				done();
-			}, 1000);
-		});
+			});
+		}, 1000);
 	});
 });

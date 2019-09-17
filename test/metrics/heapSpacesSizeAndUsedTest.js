@@ -1,5 +1,5 @@
-'use strict';
-
+const { globalStats } = require('@opencensus/core');
+const { OpenCensusMetrics } = require('../../lib/metricsWrapper');
 jest.mock('v8', () => {
 	return {
 		getHeapSpaceStatistics() {
@@ -46,23 +46,23 @@ jest.mock('v8', () => {
 
 describe('heapSpacesSizeAndUsed', () => {
 	let heapSpacesSizeAndUsed;
-	const globalRegistry = require('../../lib/registry').globalRegistry;
 
 	beforeEach(() => {
 		heapSpacesSizeAndUsed = require('../../lib/metrics/heapSpacesSizeAndUsed');
 	});
 
 	afterEach(() => {
-		globalRegistry.clear();
+		globalStats.clear();
 	});
 
 	it('should set total heap spaces size gauges with from v8', () => {
+		const openCensusMetrics = new OpenCensusMetrics(globalStats);
 		const expectedObj = {
 			total: { new: 100, old: 100, code: 100, map: 100, large_object: 100 },
 			used: { new: 50, old: 50, code: 50, map: 50, large_object: 50 },
 			available: { new: 500, old: 500, code: 500, map: 500, large_object: 500 }
 		};
 
-		expect(heapSpacesSizeAndUsed()()).toEqual(expectedObj);
+		expect(heapSpacesSizeAndUsed(openCensusMetrics)()).toEqual(expectedObj);
 	});
 });

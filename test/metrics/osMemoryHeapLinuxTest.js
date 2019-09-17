@@ -22,24 +22,19 @@ const wrapper = () => {
 	return { createGaugeMetric, getMetrics };
 };
 
-function getOpenFileDescr(cb) {
-	fs.readdir('/proc/self/fd', (err, list) => {
+function getMaxFileDescr(cb) {
+	fs.readFile('/proc/self/status', 'utf8', (err, status) => {
 		if (err) {
 			cb(err);
 		}
 
-		cb(list.length - 1);
+		cb(status);
 	});
 }
 
-describe('processOpenFileDescriptors', () => {
+describe('osMemoryHeapLinuxTest', () => {
 	const openCensusMetrics = new OpenCensusMetrics(globalStats);
-	const processOpenFileDescriptors = require('../../lib/metrics/processOpenFileDescriptors');
-
-	jest.mock(
-		'process',
-		() => Object.assign({}, jest.requireActual('process'), { platform: 'linux' }) // This metric only works on Linux
-	);
+	const osMemoryHeapLinux = require('../../lib/metrics/osMemoryHeapLinux');
 
 	beforeAll(() => {
 		globalStats.clear();
@@ -52,27 +47,29 @@ describe('processOpenFileDescriptors', () => {
 	it('should add metric to the registry', () => {
 		expect(globalStats.getMetrics()).toHaveLength(0);
 
-		processOpenFileDescriptors(openCensusMetrics, { prefix: 'testPrefix_' })();
+		osMemoryHeapLinux(openCensusMetrics, { prefix: 'testPrefix_' })();
 
 		const metrics = globalStats.getMetrics();
 
-		expect(metrics).toHaveLength(1);
-		expect(metrics[0].descriptor.description).toEqual('Number of open file descriptors.');
+		expect(metrics).toHaveLength(3);
+		expect(metrics[0].descriptor.description).toEqual('Resident memory size in bytes.');
 		expect(metrics[0].descriptor.type).toEqual(1);
-		expect(metrics[0].descriptor.name).toEqual('testPrefix_process_open_fds');
+		expect(metrics[0].descriptor.name).toEqual('testPrefix_process_resident_memory_bytes');
 	});
 
-	it('should set process_open_fds to the value of /proc/self/fd', done => {
+	it('should set process_max_fds to the value of /proc/sys/fs/file-max', done => {
 		const wrap = wrapper();
-		processOpenFileDescriptors(wrap)();
+		osMemoryHeapLinux(wrap)();
 
 		const metrics = wrap.getMetrics()[0];
 
-		getOpenFileDescr(maxOpenFileDesc => {
-			setTimeout(() => {
-				expect(metrics.get()).toEqual(maxOpenFileDesc);
+		setTimeout(() => {
+			/*getMaxFileDescr(maxFileDesc => {
+				
 				done();
-			}, 1000);
-		});
+            });*/
+			expect(typeof metrics.get()).toBe('number');
+			done();
+		}, 1000);
 	});
 });

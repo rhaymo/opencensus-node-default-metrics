@@ -1,116 +1,97 @@
-describe("collectDefaultMetrics", () => {
-  const register = require("../index").register;
-  const Registry = require("../index").Registry;
-  const collectDefaultMetrics = require("../index").collectDefaultMetrics;
-  let platform;
-  let cpuUsage;
-  let interval;
+const { globalStats } = require('@opencensus/core');
+const { OpenCensusMetrics } = require('../lib/metricsWrapper');
 
-  beforeAll(() => {
-    platform = process.platform;
-    cpuUsage = process.cpuUsage;
+describe('collectDefaultMetrics', () => {
+	const openCensusMetrics = new OpenCensusMetrics(globalStats);
+	const collectDefaultMetrics = require('../index').collectDefaultMetrics;
+	let platform;
+	let cpuUsage;
+	let interval;
 
-    Object.defineProperty(process, "platform", {
-      value: "my-bogus-platform"
-    });
+	beforeAll(() => {
+		platform = process.platform;
+		cpuUsage = process.cpuUsage;
 
-    if (cpuUsage) {
-      Object.defineProperty(process, "cpuUsage", {
-        value() {
-          return { user: 1000, system: 10 };
-        }
-      });
-    } else {
-      process.cpuUsage = function() {
-        return { user: 1000, system: 10 };
-      };
-    }
+		Object.defineProperty(process, 'platform', {
+			value: 'my-bogus-platform'
+		});
 
-    register.clear();
-  });
+		if (cpuUsage) {
+			Object.defineProperty(process, 'cpuUsage', {
+				value() {
+					return { user: 1000, system: 10 };
+				}
+			});
+		} else {
+			process.cpuUsage = function() {
+				return { user: 1000, system: 10 };
+			};
+		}
 
-  afterAll(() => {
-    Object.defineProperty(process, "platform", {
-      value: platform
-    });
+		globalStats.clear();
+	});
 
-    if (cpuUsage) {
-      Object.defineProperty(process, "cpuUsage", {
-        value: cpuUsage
-      });
-    } else {
-      delete process.cpuUsage;
-    }
-  });
+	afterAll(() => {
+		Object.defineProperty(process, 'platform', {
+			value: platform
+		});
 
-  afterEach(() => {
-    register.clear();
-    clearInterval(interval);
-  });
+		if (cpuUsage) {
+			Object.defineProperty(process, 'cpuUsage', {
+				value: cpuUsage
+			});
+		} else {
+			delete process.cpuUsage;
+		}
+	});
 
-  it("should add metrics to the registry", () => {
-    expect(register.getMetricsAsJSON()).toHaveLength(0);
-    interval = collectDefaultMetrics();
-    expect(register.getMetricsAsJSON()).not.toHaveLength(0);
-  });
+	afterEach(() => {
+		globalStats.clear();
+		clearInterval(interval);
+	});
 
-  it("should allow blacklisting all metrics", () => {
-    expect(register.getMetricsAsJSON()).toHaveLength(0);
-    clearInterval(collectDefaultMetrics());
-    register.clear();
-    expect(register.getMetricsAsJSON()).toHaveLength(0);
-  });
+	it('should add metrics to the registry', () => {
+		expect(globalStats.getMetrics()).toHaveLength(0);
+		interval = collectDefaultMetrics();
+		expect(globalStats.getMetrics()).not.toHaveLength(0);
+	});
 
-  it("should prefix metric names when configured", () => {
-    interval = collectDefaultMetrics({ prefix: "some_prefix_" });
-    expect(register.getMetricsAsJSON()).not.toHaveLength(0);
-    register.getMetricsAsJSON().forEach(metric => {
-      expect(metric.name.substring(0, 12)).toEqual("some_prefix_");
-    });
-  });
+	it('should allow blacklisting all metrics', () => {
+		expect(globalStats.getMetrics()).toHaveLength(0);
+		clearInterval(collectDefaultMetrics());
+		globalStats.clear();
+		expect(globalStats.getMetrics()).toHaveLength(0);
+	});
 
-  it("should omit timestamp in certain metrics", () => {
-    const metricsWithToggableTimestamp = [
-      "nodejs_active_handles_total",
-      "nodejs_external_memory_bytes",
-      "nodejs_heap_size_total_bytes",
-      "nodejs_heap_size_used_bytes"
-    ];
-    interval = collectDefaultMetrics({ timestamps: false });
-    expect(register.getMetricsAsJSON()).not.toHaveLength(0);
-    const testableMetrics = register
-      .getMetricsAsJSON()
-      .filter(metrics => metricsWithToggableTimestamp.indexOf(metrics.name) !== -1);
-    testableMetrics.forEach(metric => {
-      expect(metric.values).not.toHaveLength(0);
-      expect(metric.values[0].timestamp).not.toBeDefined();
-    });
-  });
+	it('should prefix metric names when configured', () => {
+		interval = collectDefaultMetrics({ prefix: 'some_prefix_' });
+		expect(globalStats.getMetrics()).not.toHaveLength(0);
+		globalStats.getMetrics().forEach(metric => {
+			expect(metric.descriptor.name.substring(0, 12)).toEqual('some_prefix_');
+		});
+	});
 
-  describe("disabling", () => {
-    it("should not throw error", () => {
-      const fn = function() {
-        delete require.cache[require.resolve("../index")];
-        const client = require("../index");
-        clearInterval(client.collectDefaultMetrics());
-        register.clear();
-      };
+	describe('disabling', () => {
+		it('should not throw error', () => {
+			const fn = function() {
+				delete require.cache[require.resolve('../index')];
+				const client = require('../index');
+				clearInterval(client.collectDefaultMetrics());
+				globalStats.clear();
+			};
 
-      expect(fn).not.toThrowError(Error);
-    });
-  });
+			expect(fn).not.toThrowError(Error);
+		});
+	});
 
-  describe("custom registry", () => {
-    it("should allow to register metrics to custom registry", () => {
-      const registry = new Registry();
+	describe('custom registry', () => {
+		it('should allow to register metrics to custom registry', () => {
+			expect(globalStats.getMetrics()).toHaveLength(0);
+			expect(globalStats.getMetrics()).toHaveLength(0);
 
-      expect(register.getMetricsAsJSON()).toHaveLength(0);
-      expect(registry.getMetricsAsJSON()).toHaveLength(0);
+			interval = collectDefaultMetrics({ stats: globalStats });
 
-      interval = collectDefaultMetrics({ register: registry });
-
-      expect(register.getMetricsAsJSON()).toHaveLength(0);
-      expect(registry.getMetricsAsJSON()).not.toHaveLength(0);
-    });
-  });
+			expect(globalStats.getMetrics()).not.toHaveLength(0);
+		});
+	});
 });
