@@ -9,6 +9,10 @@ node_js:
 
 script: npm run unit
 
+branches:
+  except:
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
 jobs:
   include:
     - stage: lint
@@ -19,14 +23,12 @@ jobs:
       script: npm run coveralls
     - stage: npm release
       script: echo "Deploying to npm ..."
-      before_deploy:
-        - export TRAVIS_TAG="$(git tag -l --points-at HEAD)"
       deploy:
         provider: npm
         email: $MAIL_ADDRESS
         api_key: $NPM_API_KEY
         on:
-          tags: true
+          condition: -z $(git tag --points-at $TRAVIS_COMMIT)
 
 stages:
   - name: lint
