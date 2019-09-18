@@ -22,7 +22,7 @@
 		"scripts": {
 			"prerelease": "npm run test",
 			"postbump": "echo Version: v$npm_package_version",
-			"posttag1": "git push --follow-tags origin $npm_package_config_releaseBranch"
+			"posttag": "git push --follow-tags origin $npm_package_config_releaseBranch"
 		}
 	},
 	"scripts": {
