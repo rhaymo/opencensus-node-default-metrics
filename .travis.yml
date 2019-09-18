@@ -19,10 +19,14 @@ jobs:
       script: npm run coveralls
     - stage: npm release
       script: echo "Deploying to npm ..."
+      before_deploy:
+        - export TRAVIS_TAG="$(git tag -l --points-at HEAD)"
       deploy:
         provider: npm
         email: $MAIL_ADDRESS
         api_key: $NPM_API_KEY
+        on:
+          tags: true
 
 stages:
   - name: lint
@@ -30,4 +34,4 @@ stages:
   - name: security
   - name: coverage
   - name: npm release
-    if: branch = master AND tag IS present AND type = push
+    if: branch = master AND type = push
