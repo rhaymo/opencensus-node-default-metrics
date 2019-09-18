@@ -66,10 +66,9 @@ describe('processOpenFileDescriptors', () => {
 		const wrap = wrapper();
 		processOpenFileDescriptors(wrap)();
 
-		const metrics = wrap.getMetrics()[0];
-
 		getOpenFileDescr(maxOpenFileDesc => {
 			setTimeout(() => {
+				const metrics = wrap.getMetrics()[0];
 				expect(metrics.get()).toEqual(maxOpenFileDesc);
 				done();
 			}, 1000);

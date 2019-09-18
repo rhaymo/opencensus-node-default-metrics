@@ -1,4 +1,4 @@
-# Default metrics for node.js using opencensus [![Build Status](https://travis-ci.org/rhaymo/opencensus-node-default-metrics.svg?branch=master)](https://travis-ci.org/rhaymo/opencensus-node-default-metrics)
+# Default metrics for node.js using opencensus [![Build Status](https://travis-ci.org/rhaymo/opencensus-node-default-metrics.svg?branch=master)](https://travis-ci.org/rhaymo/opencensus-node-default-metrics) [![Known Vulnerabilities](https://snyk.io//test/github/rhaymo/opencensus-node-default-metrics/badge.svg?targetFile=package.json)](https://snyk.io//test/github/rhaymo/opencensus-node-default-metrics?targetFile=package.json)
 
 Collect default nodejs metrics using opencensus framework.
 This module is inspired and based on the [prom-client](https://github.com/siimon/prom-client) and [node-prometheus-gc-stats](https://github.com/SimenB/node-prometheus-gc-stats) package.

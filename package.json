@@ -22,7 +22,7 @@
 		"scripts": {
 			"prerelease": "npm run test",
 			"postbump": "echo Version: v$npm_package_version",
-			"posttag": "git push --follow-tags origin $npm_package_config_releaseBranch"
+			"posttag1": "git push --follow-tags origin $npm_package_config_releaseBranch"
 		}
 	},
 	"scripts": {
@@ -65,7 +65,8 @@
 		"jest": "^24.8.0",
 		"lint-staged": "^7.0.0",
 		"prettier": "1.17.1",
-		"replace": "^1.1.0"
+		"replace": "^1.1.0",
+		"standard-version": "^6.0.0"
 	},
 	"jest": {
 		"testEnvironment": "node",
