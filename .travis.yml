@@ -23,8 +23,6 @@ jobs:
         provider: npm
         email: $MAIL_ADDRESS
         api_key: $NPM_API_KEY
-        on:
-          branch: master
 
 stages:
   - name: lint
@@ -32,4 +30,4 @@ stages:
   - name: security
   - name: coverage
   - name: npm release
-    if: tag IS present
+    if: branch = master AND tag IS present AND type = push
