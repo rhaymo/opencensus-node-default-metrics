@@ -28,7 +28,7 @@ jobs:
         email: $MAIL_ADDRESS
         api_key: $NPM_API_KEY
         on:
-          condition: -z $(git tag --points-at $TRAVIS_COMMIT)
+          condition: -n $(git tag --points-at $TRAVIS_COMMIT)
 
 stages:
   - name: lint
