@@ -7,7 +7,7 @@ node_js:
   - '8'
   - '6'
 
-script: npm run unit
+script: npm run test
 
 branches:
   except:
@@ -15,9 +15,6 @@ branches:
 
 jobs:
   include:
-    - stage: lint and security
-      script: npm run lint
-    - script: npm audit
     - stage: test
       after_success: 'cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
     - stage: npm release
@@ -30,7 +27,6 @@ jobs:
           condition: -n $(git tag --points-at $TRAVIS_COMMIT)
 
 stages:
-  - name: lint and security
   - name: test
   - name: npm release
     if: branch = master AND type = push
