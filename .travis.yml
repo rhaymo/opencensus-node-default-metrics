@@ -15,12 +15,11 @@ branches:
 
 jobs:
   include:
-    - stage: lint
+    - stage: lint and security
       script: npm run lint
-    - stage: security
-      script: npm audit
-    - stage: coverage
-      script: npm run coveralls
+    - script: npm audit
+    - stage: test
+      after_success: 'cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
     - stage: npm release
       script: echo "Deploying to npm ..."
       deploy:
@@ -31,9 +30,7 @@ jobs:
           condition: -n $(git tag --points-at $TRAVIS_COMMIT)
 
 stages:
-  - name: lint
+  - name: lint and security
   - name: test
-  - name: security
-  - name: coverage
   - name: npm release
     if: branch = master AND type = push
