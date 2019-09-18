@@ -32,4 +32,4 @@ stages:
   - name: security
   - name: coverage
   - name: npm release
-    if: branch = master AND tag IS present AND type = push
+    if: branch = master AND type = push
