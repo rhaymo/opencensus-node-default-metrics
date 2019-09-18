@@ -1,4 +1,4 @@
-# Default metrics for node.js using opencensus [![Build Status](https://travis-ci.org/siimon/prom-client.svg?branch=master)](https://travis-ci.org/siimon/prom-client) [![Build status](https://ci.appveyor.com/api/projects/status/k2e0gwonkcee3lp9/branch/master?svg=true)](https://ci.appveyor.com/project/siimon/prom-client/branch/master)
+# Default metrics for node.js using opencensus [![Build Status](https://travis-ci.org/rhaymo/opencensus-node-default-metrics.svg?branch=master)](https://travis-ci.org/rhaymo/opencensus-node-default-metrics)
 
 Collect default nodejs metrics using opencensus framework.
 This module is inspired and based on the [prom-client](https://github.com/siimon/prom-client) and [node-prometheus-gc-stats](https://github.com/SimenB/node-prometheus-gc-stats) package.
