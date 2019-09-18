@@ -1,15 +1,28 @@
 # Default metrics for node.js using opencensus
 
-[![Node version](https://img.shields.io/node/v/opencensus-node-default-metrics)]()
-[![Downloads Count](https://img.shields.io/npm/dm/opencensus-node-default-metrics)](https://travis-ci.org/rhaymo/opencensus-node-default-metrics)
+[![Node version](https://img.shields.io/node/v/opencensus-default-metrics)]()
+[![Downloads Count](https://img.shields.io/npm/dm/opencensus-default-metrics)]()
 [![Build Status](https://travis-ci.org/rhaymo/opencensus-node-default-metrics.svg?branch=master)](https://travis-ci.org/rhaymo/opencensus-node-default-metrics)
 [![Known Vulnerabilities](https://snyk.io//test/github/rhaymo/opencensus-node-default-metrics/badge.svg?targetFile=package.json)](https://snyk.io//test/github/rhaymo/opencensus-node-default-metrics?targetFile=package.json)
 [![Coverage Status](https://coveralls.io/repos/github/rhaymo/opencensus-node-default-metrics/badge.svg?branch=master)](https://coveralls.io/github/rhaymo/opencensus-node-default-metrics?branch=master)
 [![License](https://img.shields.io/github/license/rhaymo/opencensus-node-default-metrics)](https://github.com/rhaymo/opencensus-node-default-metrics/blob/master/LICENSE)
-[![Npm Size](https://img.shields.io/bundlephobia/min/opencensus-node-default-metrics/0.0.1?label=size)]()
 
 Collect default nodejs metrics using opencensus framework.
 This module is inspired and based on the [prom-client](https://github.com/siimon/prom-client) and [node-prometheus-gc-stats](https://github.com/SimenB/node-prometheus-gc-stats) package.
+
+## Install
+
+Install with npm:
+
+```
+npm i opencensus-default-metrics --save
+```
+
+Install with yarn:
+
+```
+yarn add opencensus-default-metrics
+```
 
 ## Usage
 
