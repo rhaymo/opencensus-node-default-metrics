@@ -7,19 +7,17 @@ node_js:
   - '8'
   - '6'
 
+script: npm run unit
+
 jobs:
   include:
     - stage: lint
       script: npm run lint
-    - stage: unit
-      script: npm run unit
     - stage: security
       script: npm run audit
     - stage: coverage
       script: npm run coveralls
-      node_js: '12'
     - stage: npm release
-      node_js: '12'
       script: echo "Deploying to npm ..."
       deploy:
         provider: npm
@@ -30,7 +28,7 @@ jobs:
 
 stages:
   - name: lint
-  - name: unit
+  - name: test
   - name: security
   - name: coverage
   - name: npm release
