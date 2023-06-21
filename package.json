@@ -49,7 +49,7 @@
 	},
 	"homepage": "https://github.com/rhaymo/opencensus-node-default-metrics#README",
 	"dependencies": {
-		"@opencensus/core": "0.0.17",
+		"@opencensus/core": "0.0.22",
 		"gc-stats": "^1.4.0"
 	},
 	"devDependencies": {
