@@ -50,7 +50,7 @@
 	"homepage": "https://github.com/rhaymo/opencensus-node-default-metrics#README",
 	"dependencies": {
 		"@opencensus/core": "0.0.17",
-		"gc-stats": "^1.4.0"
+		"gc-stats": "^1.4.1"
 	},
 	"devDependencies": {
 		"@opencensus/exporter-prometheus": "0.0.17",
